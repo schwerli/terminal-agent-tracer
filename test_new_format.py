@@ -14,11 +14,12 @@ from analyze_agent_failures import DataExtractor, AnalysisPromptBuilder
 def main():
     """Test the new prompt format."""
     if len(sys.argv) < 2:
-        print("Usage: python test_new_format.py <run_directory>")
-        print("Example: python test_new_format.py /data/terminalbench/terminal-bench0/runs/2025-09-16__00-48-15/")
+        print("Usage: python test_new_format.py <run_directory> [tasks_directory]")
+        print("Example: python test_new_format.py /data/terminalbench/terminal-bench0/runs/2025-09-16__00-48-15/ /data/terminalbench/terminal-bench/tasks")
         sys.exit(1)
     
     run_dir = Path(sys.argv[1])
+    tasks_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else None
     
     if not run_dir.exists():
         print(f"Error: Directory not found: {run_dir}")
@@ -27,7 +28,10 @@ def main():
     print(f"Testing new format with data from: {run_dir}\n")
     
     # Create extractor
-    extractor = DataExtractor(run_dir)
+    extractor = DataExtractor(run_dir, tasks_dir)
+    
+    if extractor.tasks_base_dir:
+        print(f"Using tasks directory: {extractor.tasks_base_dir}\n")
     
     # Find task directories
     task_dirs = extractor.find_task_directories()

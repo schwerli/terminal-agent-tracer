@@ -13,8 +13,8 @@ from llm_providers import get_provider
 
 def main():
     if len(sys.argv) < 5:
-        print("Usage: python analyze_one_task.py <run_dir> <model_provider> <model_name> <api_key> [base_url]")
-        print("Example: python analyze_one_task.py /data/terminalbench/terminal-bench0/runs/2025-09-16__00-48-15/ custom gpt-5 sk-xxx https://api.chatanywhere.tech/v1")
+        print("Usage: python analyze_one_task.py <run_dir> <model_provider> <model_name> <api_key> [base_url] [tasks_dir]")
+        print("Example: python analyze_one_task.py /data/terminalbench/terminal-bench0/runs/2025-09-16__00-48-15/ custom gpt-5 sk-xxx https://api.chatanywhere.tech/v1 /data/terminalbench/terminal-bench/tasks")
         sys.exit(1)
     
     run_dir = Path(sys.argv[1])
@@ -22,9 +22,16 @@ def main():
     model_name = sys.argv[3]
     api_key = sys.argv[4]
     base_url = sys.argv[5] if len(sys.argv) > 5 else None
+    tasks_dir = Path(sys.argv[6]) if len(sys.argv) > 6 else None
     
     print(f"Extracting tasks from: {run_dir}")
-    extractor = DataExtractor(run_dir)
+    extractor = DataExtractor(run_dir, tasks_dir)
+    
+    if extractor.tasks_base_dir:
+        print(f"Using tasks directory: {extractor.tasks_base_dir}")
+    else:
+        print("Warning: No tasks directory found")
+    
     task_dirs = extractor.find_task_directories()
     print(f"Found {len(task_dirs)} task directories\n")
     

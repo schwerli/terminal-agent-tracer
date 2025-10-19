@@ -12,11 +12,12 @@ from analyze_agent_failures import DataExtractor, AnalysisPromptBuilder
 def main():
     """Test data extraction functionality."""
     if len(sys.argv) < 2:
-        print("Usage: python test_extraction.py <run_directory>")
-        print("Example: python test_extraction.py terminal-bench0/runs/2025-09-16__00-48-15/")
+        print("Usage: python test_extraction.py <run_directory> [tasks_directory]")
+        print("Example: python test_extraction.py terminal-bench0/runs/2025-09-16__00-48-15/ /data/terminalbench/terminal-bench/tasks")
         sys.exit(1)
     
     run_dir = Path(sys.argv[1])
+    tasks_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else None
     
     if not run_dir.exists():
         print(f"Error: Directory not found: {run_dir}")
@@ -25,7 +26,12 @@ def main():
     print(f"Testing data extraction from: {run_dir}\n")
     
     # Create extractor
-    extractor = DataExtractor(run_dir)
+    extractor = DataExtractor(run_dir, tasks_dir)
+    
+    if extractor.tasks_base_dir:
+        print(f"Using tasks directory: {extractor.tasks_base_dir}\n")
+    else:
+        print("Warning: No tasks directory provided or found\n")
     
     # Find task directories
     print("Finding task directories...")

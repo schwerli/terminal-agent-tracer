@@ -24,6 +24,7 @@ pip install -r failure_analysis_requirements.txt
 # Analyze failed tasks
 python analyze_agent_failures.py \
   --run-dir /path/to/runs/2025-09-16__00-48-15/ \
+  --tasks-dir /path/to/terminal-bench/tasks \
   --model-provider custom \
   --model-name gpt-4 \
   --api-key YOUR_API_KEY \
@@ -41,7 +42,8 @@ python analyze_one_task.py \
   custom \
   gpt-4 \
   YOUR_API_KEY \
-  https://api.example.com/v1
+  https://api.example.com/v1 \
+  /path/to/terminal-bench/tasks
 ```
 
 ## What Gets Analyzed
@@ -80,6 +82,7 @@ Environment variables:
 
 ```
 --run-dir         Path to run directory (required)
+--tasks-dir       Path to terminal-bench tasks directory (optional, will auto-search if not provided)
 --model-provider  LLM provider: openai, anthropic, custom (required)
 --model-name      Model name (required)
 --api-key         API key (or use environment variable)
@@ -102,14 +105,15 @@ Environment variables:
 
 ```bash
 # 1. Test data extraction (no API calls)
-python test_extraction.py /path/to/runs/
+python test_extraction.py /path/to/runs/ /path/to/terminal-bench/tasks
 
 # 2. Test with one task
-python analyze_one_task.py /path/to/runs/ openai gpt-4 YOUR_KEY
+python analyze_one_task.py /path/to/runs/ openai gpt-4 YOUR_KEY https://api.openai.com/v1 /path/to/terminal-bench/tasks
 
 # 3. Run full analysis with parallel processing
 python analyze_agent_failures.py \
   --run-dir /path/to/runs/ \
+  --tasks-dir /path/to/terminal-bench/tasks \
   --model-provider openai \
   --model-name gpt-4 \
   --concurrency 5 \

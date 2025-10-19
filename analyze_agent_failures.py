@@ -690,7 +690,14 @@ def main_sync(args):
     
     # Extract data
     print(f"Extracting data from: {run_dir}")
-    extractor = DataExtractor(run_dir)
+    tasks_base_dir = Path(args.tasks_dir) if args.tasks_dir else None
+    extractor = DataExtractor(run_dir, tasks_base_dir)
+    
+    if extractor.tasks_base_dir:
+        print(f"Using tasks directory: {extractor.tasks_base_dir}")
+    else:
+        print("Warning: Could not find terminal-bench tasks directory. Test files and solutions will not be included.")
+    
     task_dirs = extractor.find_task_directories()
     print(f"Found {len(task_dirs)} task directories")
     
@@ -796,6 +803,11 @@ def main():
         type=int,
         default=MAX_EPISODES_TO_INCLUDE,
         help=f"Maximum episodes to include in analysis (default: {MAX_EPISODES_TO_INCLUDE})"
+    )
+    
+    parser.add_argument(
+        "--tasks-dir",
+        help="Path to terminal-bench tasks directory (e.g., /path/to/terminal-bench/tasks). If not provided, will search common locations."
     )
     
     parser.add_argument(

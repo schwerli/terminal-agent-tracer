@@ -7,6 +7,7 @@ Installation:
 Basic Usage:
   python analyze_agent_failures.py \
     --run-dir <path-to-run-directory> \
+    --tasks-dir <path-to-terminal-bench-tasks> \
     --model-provider <openai|anthropic|custom> \
     --model-name <model-name>
 
@@ -14,13 +15,14 @@ Example:
   export OPENAI_API_KEY="your-key"
   python analyze_agent_failures.py \
     --run-dir ../terminal-bench0/runs/2025-09-16__00-48-15/ \
+    --tasks-dir /data/terminalbench/terminal-bench/tasks \
     --model-provider openai \
     --model-name gpt-4-turbo-preview \
     --concurrency 5 \
     --output-dir ./results
 
 Test Prompt Format (without API calls):
-  python test_new_format.py ../terminal-bench0/runs/2025-09-16__00-48-15/
+  python test_new_format.py ../terminal-bench0/runs/2025-09-16__00-48-15/ /data/terminalbench/terminal-bench/tasks
 
 Files:
   - analyze_agent_failures.py  Main script
@@ -50,13 +52,14 @@ Output Format:
 
 Arguments:
   --run-dir       Path to run directory (required)
+  --tasks-dir     Path to terminal-bench tasks directory (optional, auto-searches if not provided)
   --model-provider  LLM provider: openai, anthropic, custom (required)
   --model-name    Model name (required)
   --api-key       API key (or use environment variable)
   --base-url      Base URL for custom provider
   --concurrency   Number of parallel requests (default: 1)
   --output-dir    Output directory (default: ./analysis_output)
-  --max-episodes  Max episodes to include (default: 10)
+  --max-episodes  Max episodes to include (default: 50)
   --async-mode    Use async mode for better concurrency
 
 Environment Variables:
