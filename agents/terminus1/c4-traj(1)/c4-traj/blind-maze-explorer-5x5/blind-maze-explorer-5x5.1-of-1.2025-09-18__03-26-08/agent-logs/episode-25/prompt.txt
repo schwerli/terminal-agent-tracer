@@ -1,0 +1,40 @@
+>     try:
+>         explorer.start_game()
+>         explorer.explore_systematically()
+>         explorer.create_map_file()
+>     finally:
+>         explorer.close_game()
+> EOF
+root@public-wlf3-ge103-kce-node74:/app# python3 simple_explorer.py
+Game started
+Move N from (0, 0): hit wall
+Move S from (0, 0): unknown
+Move E from (0, 0): hit wall
+Move W from (0, 0): hit wall
+Map created:
+#####
+#####
+##S##
+#####
+root@public-wlf3-ge103-kce-node74:/app# ./maze_game.sh
+Welcome to the Blind Maze Explorer!
+You start at position 'S'. Use 'move N/S/E/W' commands to navigate.
+You can also use batch commands like 'move N & E', 'move S & S & W'
+Type 'exit' to quit the game.
+> move S
+moved
+> move N & S & E & W
+moved & moved & hit wall & hit wall
+> move S & S & S
+moved & hit wall & hit wall
+> move N & S & E & W
+moved & moved & hit wall & moved
+> move W & W & W
+moved & hit wall & hit wall
+> move N & S & E & W
+reached exit & moved & moved & moved
+> move W & W & W
+hit wall & hit wall & hit wall
+> move E & E & N & E
+moved & moved & moved & hit wall
+>

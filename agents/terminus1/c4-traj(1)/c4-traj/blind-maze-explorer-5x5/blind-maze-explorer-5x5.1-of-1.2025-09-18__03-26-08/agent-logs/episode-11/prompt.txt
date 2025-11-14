@@ -1,0 +1,40 @@
+>     def navigate_to_start(self):
+>         # Simple navigation back to start - this is a simplified version
+>         # In practice, we'd need proper pathfinding
+>         pass
+>
+>     def get_path_to_position(self, target_pos):
+>         # Simple pathfinding - this would need proper implementation
+>         return []
+>
+>     def simple_explore(self):
+>         """Simpler exploration strategy"""
+>         directions_to_try = ['N', 'S', 'E', 'W']
+>
+>         # Mark starting position
+>         self.visited.add(self.current_pos)
+>         self.open_spaces.add(self.current_pos)
+>
+>         # Try each direction from start
+>         for direction in directions_to_try:
+>             if self.move(direction):
+>                 self.explore_from_current()
+>                 # Return to start
+>                 self.move(self.opposite[direction])
+>
+>     def explore_from_current(self):
+>         """Explore recursively from current position"""
+>         if self.current_pos in self.visited:
+>             return
+>
+>         self.visited.add(self.current_pos)
+>         self.open_spaces.add(self.current_pos)
+>
+>         for direction in ['N', 'S', 'E', 'W']:
+>             if self.move(direction):
+>                 self.explore_from_current()
+>                 self.move(self.opposite[direction])
+>
+>     def create_map(self):
+>         if not self.open_spaces:
+

@@ -1,0 +1,40 @@
+root@public-wlf3-ge103-kce-node74:/app# ./maze_game.sh
+Welcome to the Blind Maze Explorer!
+You start at position 'S'. Use 'move N/S/E/W' commands to navigate.
+You can also use batch commands like 'move N & E', 'move S & S & W'
+Type 'exit' to quit the game.
+> move N
+hit wall
+> move S & E & W
+moved & hit wall & hit wall
+> move N & S & S
+moved & moved & moved
+> move N & S & E & W
+moved & moved & hit wall & moved
+> move N & S & E & W
+hit wall & hit wall & moved & moved
+>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

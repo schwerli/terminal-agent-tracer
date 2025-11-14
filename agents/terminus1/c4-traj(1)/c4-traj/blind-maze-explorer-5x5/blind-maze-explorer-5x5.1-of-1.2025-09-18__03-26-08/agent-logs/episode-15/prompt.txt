@@ -1,0 +1,40 @@
+>                 else:
+>                     line += '#'  # Unknown areas are walls
+>             map_lines.append(line)
+>
+>         map_content = '\n'.join(map_lines)
+>
+>         with open('/app/maze_map.txt', 'w') as f:
+>             f.write(map_content)
+>
+>         print("Map created:")
+>         print(map_content)
+>         return map_content
+>
+>     def close_game(self):
+>         if self.process:
+>             self.process.stdin.write("exit\n")
+>             self.process.stdin.flush()
+>             self.process.terminate()
+>
+> if __name__ == "__main__":
+>     explorer = SimpleMazeExplorer()
+>     try:
+>         explorer.start_game()
+>         explorer.explore_systematically()
+>         explorer.create_map_file()
+>     finally:
+>         explorer.close_game()
+> EOF
+root@public-wlf3-ge103-kce-node74:/app# python3 simple_explorer.py
+Game started
+Move N from (0, 0): hit wall
+Move S from (0, 0): unknown
+Move E from (0, 0): hit wall
+Move W from (0, 0): hit wall
+Map created:
+#####
+#####
+##S##
+#####
+root@public-wlf3-ge103-kce-node74:/app#

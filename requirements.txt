@@ -1,0 +1,9 @@
+# Requirements for Terminal Agent Failure Analysis
+
+# LLM API clients
+openai>=1.0.0
+anthropic>=0.18.0
+
+# Core dependencies
+# python>=3.8
+

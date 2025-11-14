@@ -1,0 +1,40 @@
+>
+>         # Create map
+>         maze_map = []
+>         for y in range(min_y - 1, max_y + 2):
+>             row = []
+>             for x in range(min_x - 1, max_x + 2):
+>                 pos = (x, y)
+>                 if pos == self.start_pos:
+>                     row.append('S')
+>                 elif pos == self.exit_pos:
+>                     row.append('E')
+>                 elif pos in self.open_spaces:
+>                     row.append(' ')
+>                 else:
+>                     row.append('#')
+>             maze_map.append(''.join(row))
+>
+>         return '\n'.join(maze_map)
+>
+>     def close(self):
+>         if self.process:
+>             self.send_command('exit')
+>             self.process.terminate()
+>
+> if __name__ == '__main__':
+>     explorer = MazeExplorer()
+>     explorer.start_maze()
+>     explorer.simple_explore()
+>     maze_map = explorer.create_map()
+>     explorer.close()
+>
+>     with open('/app/maze_map.txt', 'w') as f:
+>         f.write(maze_map)
+>
+>     print("Exploration complete. Map saved to /app/maze_map.txt")
+>     print("Map:")
+>     print(maze_map)
+> EOF
+root@public-wlf3-ge103-kce-node74:/app# ^C
+root@public-wlf3-ge103-kce-node74:/app#

@@ -1,0 +1,40 @@
+> print('  N: to (0,2), S: to (0,3), E: wall, W: to (-1,3)')
+> print('move W & W & W -> moved & hit wall & hit wall')
+> print('  W: to (-2,3), W: wall, W: wall')
+> print('move N & S & E & W -> reached exit & moved & moved & moved')
+> print('  N: EXIT at (-2,2), S: to (-2,4), E: to (-1,3), W: to (-3,3)')
+> print()
+> print('Maze structure:')
+> print('(-3,2) (-2,2) (-1,2) (0,2)')
+> print('(-3,3) (-2,3) (-1,3) (0,3)')
+> print('(-3,4) (-2,4) (-1,4) (0,4)')
+> print()
+> print('Where:')
+> print('(0,0) = S (start)')
+> print('(-2,2) = E (exit)')
+> print('Open spaces: (0,0), (0,1), (0,2), (0,3), (-1,3), (-2,3), (-2,2), (-2,4), (-3,3)')
+> "; tmux wait -S done
+Reconstructing maze from exploration data:
+Start at (0,0) - S position
+move S -> moved -> now at (0,1)
+move N & S & E & W -> moved & moved & hit wall & hit wall
+  N: back to (0,0), S: to (0,2), E: wall, W: wall
+move S & S & S -> moved & hit wall & hit wall
+  S: to (0,3), S: wall, S: wall
+move N & S & E & W -> moved & moved & hit wall & moved
+  N: to (0,2), S: to (0,3), E: wall, W: to (-1,3)
+move W & W & W -> moved & hit wall & hit wall
+  W: to (-2,3), W: wall, W: wall
+move N & S & E & W -> reached exit & moved & moved & moved
+  N: EXIT at (-2,2), S: to (-2,4), E: to (-1,3), W: to (-3,3)
+
+Maze structure:
+(-3,2) (-2,2) (-1,2) (0,2)
+(-3,3) (-2,3) (-1,3) (0,3)
+(-3,4) (-2,4) (-1,4) (0,4)
+
+Where:
+(0,0) = S (start)
+(-2,2) = E (exit)
+Open spaces: (0,0), (0,1), (0,2), (0,3), (-1,3), (-2,3), (-2,2), (-2,4), (-3,3)
+root@public-wlf3-ge103-kce-node74:/app#

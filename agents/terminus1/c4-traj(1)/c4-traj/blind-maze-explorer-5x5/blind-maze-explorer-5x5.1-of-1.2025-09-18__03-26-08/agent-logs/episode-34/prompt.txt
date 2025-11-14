@@ -1,0 +1,40 @@
+>
+> print(f'Bounds: x from {min_x} to {max_x}, y from {min_y} to {max_y}')
+>
+> # Create map with walls around perimeter
+> map_lines = []
+> for y in range(min_y - 1, max_y + 2):
+>     line = ''
+>     for x in range(min_x - 1, max_x + 2):
+>         pos = (x, y)
+>         if pos == start_pos:
+>             line += 'S'
+>         elif pos == exit_pos:
+>             line += 'E'
+>         elif pos in open_spaces:
+>             line += ' '
+>         else:
+>             line += '#'
+>     map_lines.append(line)
+>
+> map_content = '\\n'.join(map_lines)
+> print('Generated map:')
+> for line in map_lines:
+>     print(line)
+>
+> with open('/app/maze_map.txt', 'w') as f:
+>     f.write(map_content)
+> print('\\nMap saved to /app/maze_map.txt')
+> "; tmux wait -S done
+Bounds: x from -3 to 0, y from 0 to 4
+Generated map:
+######
+####S#
+#### #
+##E# #
+#    #
+## ###
+######
+
+Map saved to /app/maze_map.txt
+root@public-wlf3-ge103-kce-node74:/app#
