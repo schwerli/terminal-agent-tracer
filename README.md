@@ -1,6 +1,6 @@
 # Terminal Agent Failure Analysis
 
-Analyze failures from multiple terminal agents (Hermes, Terminus/C4) using LLM APIs.
+Analyze failures from multiple terminal agents using OpenAI-compatible LLM APIs.
 
 ## Quick Start
 
@@ -10,92 +10,154 @@ Analyze failures from multiple terminal agents (Hermes, Terminus/C4) using LLM A
 pip install -r requirements.txt
 ```
 
-### Hermes Agent Analysis
+## Agent Analysis Commands
+
+### Terminus1 Agent
 
 ```bash
-# Test prompt format
-python tests/test_new_format.py hermes \
-  /path/to/hermes-runs \
-  /path/to/terminal-bench/tasks
+cd /data/terminalbench/agent_failure_analysis
 
-# Run full analysis
-export WQ_API_KEY="your-api-key"
-python agents/hermes/analyze_failures.py \
-  --run-dir /path/to/hermes-runs \
-  --tasks-dir /path/to/terminal-bench/tasks \
-  --model-provider custom \
-  --model-name app-4lj8uu-1757909116059641172 \
-  --api-key "$WQ_API_KEY" \
-  --base-url http://wanqing.internal/api/agent/v1/apps \
+export OPENAI_API_KEY="your-api-key"
+
+python agents/terminus1/analyze_failures.py \
+  --run-dir "/path/to/terminus1-runs" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --model-name gpt-4o-mini \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
   --concurrency 1 \
-  --output-dir ./analysis_results
+  --output-dir ./analysis_results_terminus1
 ```
 
-### Terminus (C4) Agent Analysis
+### Terminus2 Agent
 
 ```bash
-# Test prompt format
-python tests/test_new_format.py terminus \
-  /path/to/c4-traj \
-  /path/to/terminal-bench/tasks
+cd /data/terminalbench/agent_failure_analysis
 
-# Run full analysis
-export WQ_API_KEY="your-api-key"
-python agents/terminus/analyze_failures.py \
-  --run-dir /path/to/c4-traj \
-  --tasks-dir /path/to/terminal-bench/tasks \
-  --model-provider custom \
-  --model-name app-4lj8uu-1757909116059641172 \
-  --api-key "$WQ_API_KEY" \
-  --base-url http://wanqing.internal/api/agent/v1/apps \
+export OPENAI_API_KEY="your-api-key"
+
+python agents/terminus2/analyze_failures.py \
+  --run-dir "/path/to/terminus2-runs" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --model-name gpt-4o-mini \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
   --concurrency 1 \
-  --output-dir ./analysis_results
+  --output-dir ./analysis_results_terminus2
+```
+
+### Hermes Agent
+
+```bash
+cd /data/terminalbench/agent_failure_analysis
+
+export OPENAI_API_KEY="your-api-key"
+
+python agents/hermes/analyze_failures.py \
+  --run-dir "/path/to/hermes-runs" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --model-name gpt-4o-mini \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --concurrency 1 \
+  --output-dir ./analysis_results_hermes
+```
+
+### Miniswe Agent
+
+```bash
+cd /data/terminalbench/agent_failure_analysis
+
+export OPENAI_API_KEY="your-api-key"
+
+python agents/minisweagent/analyze_failures.py \
+  --run-dir "/path/to/miniswe-c4" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --model-name gpt-4o-mini \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --concurrency 1 \
+  --output-dir ./analysis_results_miniswe
 ```
 
 ## Test Scripts
 
-### Test Data Extraction
+Each agent has a dedicated test script in the `tests/` directory.
+
+### Test Terminus1
 
 ```bash
-python tests/test_extraction.py hermes \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks
+# Generate prompt for a single task
+python tests/test_terminus1.py \
+  --run-dir "/path/to/terminus1-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode prompt
 
-python tests/test_extraction.py terminus \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks
+# Run analysis on a single task
+python tests/test_terminus1.py \
+  --run-dir "/path/to/terminus1-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode analyze \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --model-name gpt-4o-mini
 ```
 
-### Test Prompt Generation
+### Test Terminus2
 
 ```bash
-python tests/test_new_format.py hermes \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks
+# Generate prompt for a single task
+python tests/test_terminus2.py \
+  --run-dir "/path/to/terminus2-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode prompt
 
-python tests/test_new_format.py terminus \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks
+# Run analysis on a single task
+python tests/test_terminus2.py \
+  --run-dir "/path/to/terminus2-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode analyze \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --model-name gpt-4o-mini
 ```
 
-### Test Single Task Analysis
+### Test Hermes
 
 ```bash
-python tests/analyze_one_task.py hermes \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks \
-  custom \
-  app-4lj8uu-1757909116059641172 \
-  "$WQ_API_KEY" \
-  http://wanqing.internal/api/agent/v1/apps
+# Generate prompt for a single task
+python tests/test_hermes.py \
+  --run-dir "/path/to/hermes-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode prompt
 
-python tests/analyze_one_task.py terminus \
-  /path/to/runs \
-  /path/to/terminal-bench/tasks \
-  custom \
-  app-4lj8uu-1757909116059641172 \
-  "$WQ_API_KEY" \
-  http://wanqing.internal/api/agent/v1/apps
+# Run analysis on a single task
+python tests/test_hermes.py \
+  --run-dir "/path/to/hermes-runs/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode analyze \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --model-name gpt-4o-mini
+```
+
+### Test Miniswe
+
+```bash
+# Generate prompt for a single task
+python tests/test_miniswe.py \
+  --run-dir "/path/to/miniswe-c4/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode prompt
+
+# Run analysis on a single task
+python tests/test_miniswe.py \
+  --run-dir "/path/to/miniswe-c4/task-name" \
+  --tasks-dir "/data/terminalbench/terminal-bench/tasks" \
+  --mode analyze \
+  --api-key "$OPENAI_API_KEY" \
+  --base-url https://api.chatanywhere.cn/v1 \
+  --model-name gpt-4o-mini
 ```
 
 ## Architecture
@@ -104,26 +166,27 @@ python tests/analyze_one_task.py terminus \
 agent_failure_analysis/
 ├── src/                      # Shared components
 │   ├── models.py            # Data models
-│   ├── llm_providers.py     # LLM providers (OpenAI, Anthropic, Custom)
-│   ├── config.py            # Prompts and error categories
+│   ├── llm_providers.py     # OpenAI-compatible LLM provider
+│   ├── config.py            # Analysis prompt template and error categories
 │   ├── task_extractor.py    # Extract from terminal-bench tasks
 │   └── output_generator.py  # Streaming JSONL + Markdown output
-├── agents/                   # Agent-specific extractors
-│   ├── hermes/              # Hermes agent (response.txt)
-│   └── terminus/            # Terminus/C4 agent (response.json)
-└── tests/                    # Test scripts
+├── agents/                   # Agent-specific implementations
+│   ├── hermes/              # Hermes agent (response.txt format)
+│   ├── terminus1/           # Terminus1 agent (response.json format)
+│   ├── terminus2/           # Terminus2 agent (response.txt format)
+│   └── minisweagent/        # Miniswe agent (bash blocks from post-agent.txt)
+└── tests/                    # Test scripts for each agent
 ```
 
 ## Output
 
 - `analysis_results.jsonl`: Streaming JSONL (one result per line)
-- `analysis_report.md`: Human-readable Markdown report
+- `analysis_report.md`: Human-readable Markdown report with error categories, subcategories, and detailed analysis
 
 ## Features
 
-- **Multi-agent support**: Hermes and Terminus (C4) agents
+- **Multi-agent support**: Hermes, Terminus1, Terminus2, and Miniswe agents
+- **Unified LLM interface**: Single OpenAI-compatible provider for all agents
 - **Streaming output**: Results written immediately after analysis
-- **Error tracking**: Traces back to earliest error command
-- **Dynamic error categories**: Creates new categories as needed
+- **Structured error taxonomy**: High-level categories (task_understanding, solution_design, execution_error, agent_framework) with subcategories
 - **Complete context**: Includes task definition, tests, solution, and full agent trajectory
-

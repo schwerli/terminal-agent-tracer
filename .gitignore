@@ -22,3 +22,11 @@ analysis_results/
 /tmp/
 test_output/
 
+# Trajectory data and test outputs
+traj/
+analysis_results_miniswe_blind/
+analysis_results_terminus2_chess/
+analysis_results_c4/
+
+# Generated prompt files
+*_prompt.txt

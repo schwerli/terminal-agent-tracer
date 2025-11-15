@@ -58,12 +58,11 @@ class TaskResult:
 @dataclass
 class LLMAnalysis:
     """Analysis result from LLM."""
-    earliest_error_command: Optional[str] = None
     error_category: Optional[str] = None
-    new_category_created: Optional[str] = None
+    error_subcategory: Optional[str] = None
+    error_description: Optional[str] = None
     root_cause: str = ""
-    agent_mistakes: List[str] = field(default_factory=list)
-    analysis_summary: str = ""
+    analysis: str = ""
     raw_response: Optional[str] = None
 
 
@@ -86,12 +85,11 @@ class AnalysisResult:
         
         if self.llm_analysis:
             result["llm_analysis"] = {
-                "earliest_error_command": self.llm_analysis.earliest_error_command,
                 "error_category": self.llm_analysis.error_category,
-                "new_category_created": self.llm_analysis.new_category_created,
+                "error_subcategory": self.llm_analysis.error_subcategory,
+                "error_description": self.llm_analysis.error_description,
                 "root_cause": self.llm_analysis.root_cause,
-                "agent_mistakes": self.llm_analysis.agent_mistakes,
-                "analysis_summary": self.llm_analysis.analysis_summary
+                "analysis": self.llm_analysis.analysis
             }
         
         if self.error:

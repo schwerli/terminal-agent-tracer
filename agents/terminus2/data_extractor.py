@@ -1,5 +1,5 @@
 """
-Hermes agent data extractor - extracts from response.txt format.
+Terminus2 agent data extractor - extracts from response.txt format.
 """
 import json
 import traceback
@@ -13,8 +13,8 @@ from src.models import TaskResult, EpisodeData
 from src.task_extractor import extract_task_info
 
 
-class HermesDataExtractor:
-    """Extract task data from Hermes agent run directory."""
+class Terminus2DataExtractor:
+    """Extract task data from Terminus2 agent run directory."""
     
     def __init__(self, run_dir: Path, tasks_base_dir: Optional[Path] = None):
         self.run_dir = run_dir

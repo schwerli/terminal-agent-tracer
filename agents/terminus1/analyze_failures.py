@@ -24,20 +24,16 @@ from src.llm_providers import get_provider, LLMProvider
 from src.config import (
     ANALYSIS_PROMPT_TEMPLATE,
     ERROR_CATEGORIES,
-    MAX_EPISODES_TO_INCLUDE,
-    MAX_TERMINAL_OUTPUT_CHARS,
-    MAX_INITIAL_PROMPT_CHARS,
-    TRUNCATION_MESSAGE,
-    RATE_LIMIT_DELAY
 )
 from src.output_generator import StreamingOutputGenerator
-from data_extractor import TerminusDataExtractor
+from agents.terminus1.data_extractor import TerminusDataExtractor
 
 
 class AnalysisPromptBuilder:
     """Build analysis prompts for LLM."""
     
-    def __init__(self, max_episodes: int = MAX_EPISODES_TO_INCLUDE):
+    def __init__(self, max_episodes: int = 50):
+        # max_episodes is kept for backward compatibility; currently all episodes are included.
         self.max_episodes = max_episodes
     
     def build_prompt(self, task: TaskResult) -> str:
@@ -94,10 +90,7 @@ class AnalysisPromptBuilder:
             return "No episode data available."
         episode = task.episodes[0]
         if episode.prompt:
-            prompt_text = episode.prompt
-            if len(prompt_text) > MAX_INITIAL_PROMPT_CHARS:
-                prompt_text = prompt_text[:MAX_INITIAL_PROMPT_CHARS] + "\n... [PROMPT TRUNCATED] ..."
-            return prompt_text
+            return episode.prompt
         return "No initial prompt available."
     
     def _format_complete_trajectory(self, task: TaskResult) -> str:
@@ -171,42 +164,32 @@ class FailureAnalyzer:
                 data = json.loads(json_str)
                 
                 llm_analysis = LLMAnalysis(
-                    earliest_error_command=data.get("earliest_error_command"),
                     error_category=data.get("error_category"),
-                    new_category_created=data.get("new_category_created"),
+                    error_subcategory=data.get("error_subcategory"),
+                    error_description=data.get("error_description"),
                     root_cause=data.get("root_cause", ""),
-                    agent_mistakes=data.get("agent_mistakes", []),
-                    analysis_summary=data.get("analysis_summary", ""),
+                    analysis=data.get("analysis", ""),
                     raw_response=response
                 )
-                
-                # Add new category to global list if created
-                if llm_analysis.new_category_created:
-                    import src.config
-                    if llm_analysis.new_category_created not in src.config.ERROR_CATEGORIES:
-                        src.config.ERROR_CATEGORIES.append(llm_analysis.new_category_created)
-                        print(f"New error category added: {llm_analysis.new_category_created}")
                 
                 return llm_analysis
             else:
                 return LLMAnalysis(
-                    earliest_error_command=None,
                     error_category="parse_error",
-                    new_category_created=None,
+                    error_subcategory=None,
+                    error_description="Could not parse structured response",
                     root_cause="Could not parse structured response",
-                    agent_mistakes=[],
-                    analysis_summary=response,
+                    analysis=response,
                     raw_response=response
                 )
         except Exception as e:
             print(f"Error parsing LLM response: {e}")
             return LLMAnalysis(
-                earliest_error_command=None,
                 error_category="parse_error",
-                new_category_created=None,
+                error_subcategory=None,
+                error_description="Error parsing response",
                 root_cause="Error parsing response",
-                agent_mistakes=[],
-                analysis_summary=response,
+                analysis=response,
                 raw_response=response
             )
     

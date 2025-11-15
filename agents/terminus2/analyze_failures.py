@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Hermes Agent Failure Analysis Script
+Terminus2 Agent Failure Analysis Script
 
-Analyzes failed tasks from Hermes terminal agent runs on Terminal Bench,
+Analyzes failed tasks from Terminus2 terminal agent runs on Terminal Bench,
 using LLM APIs to provide detailed failure analysis.
 """
 import argparse
@@ -24,20 +24,15 @@ from src.llm_providers import get_provider, LLMProvider
 from src.config import (
     ANALYSIS_PROMPT_TEMPLATE,
     ERROR_CATEGORIES,
-    MAX_EPISODES_TO_INCLUDE,
-    MAX_TERMINAL_OUTPUT_CHARS,
-    MAX_INITIAL_PROMPT_CHARS,
-    TRUNCATION_MESSAGE,
-    RATE_LIMIT_DELAY
 )
 from src.output_generator import StreamingOutputGenerator
-from data_extractor import HermesDataExtractor
+from agents.terminus2.data_extractor import Terminus2DataExtractor
 
 
 class AnalysisPromptBuilder:
     """Build analysis prompts for LLM."""
     
-    def __init__(self, max_episodes: int = MAX_EPISODES_TO_INCLUDE):
+    def __init__(self, max_episodes: int = 50):
         self.max_episodes = max_episodes
     
     def build_prompt(self, task: TaskResult) -> str:
@@ -94,10 +89,7 @@ class AnalysisPromptBuilder:
             return "No episode data available."
         episode = task.episodes[0]
         if episode.prompt:
-            prompt_text = episode.prompt
-            if len(prompt_text) > MAX_INITIAL_PROMPT_CHARS:
-                prompt_text = prompt_text[:MAX_INITIAL_PROMPT_CHARS] + "\n... [PROMPT TRUNCATED] ..."
-            return prompt_text
+            return episode.prompt
         return "No initial prompt available."
     
     def _format_complete_trajectory(self, task: TaskResult) -> str:
@@ -171,42 +163,32 @@ class FailureAnalyzer:
                 data = json.loads(json_str)
                 
                 llm_analysis = LLMAnalysis(
-                    earliest_error_command=data.get("earliest_error_command"),
                     error_category=data.get("error_category"),
-                    new_category_created=data.get("new_category_created"),
+                    error_subcategory=data.get("error_subcategory"),
+                    error_description=data.get("error_description"),
                     root_cause=data.get("root_cause", ""),
-                    agent_mistakes=data.get("agent_mistakes", []),
-                    analysis_summary=data.get("analysis_summary", ""),
+                    analysis=data.get("analysis", ""),
                     raw_response=response
                 )
-                
-                # Add new category to global list if created
-                if llm_analysis.new_category_created:
-                    import src.config
-                    if llm_analysis.new_category_created not in src.config.ERROR_CATEGORIES:
-                        src.config.ERROR_CATEGORIES.append(llm_analysis.new_category_created)
-                        print(f"New error category added: {llm_analysis.new_category_created}")
                 
                 return llm_analysis
             else:
                 return LLMAnalysis(
-                    earliest_error_command=None,
                     error_category="parse_error",
-                    new_category_created=None,
+                    error_subcategory=None,
+                    error_description="Could not parse structured response",
                     root_cause="Could not parse structured response",
-                    agent_mistakes=[],
-                    analysis_summary=response,
+                    analysis=response,
                     raw_response=response
                 )
         except Exception as e:
             print(f"Error parsing LLM response: {e}")
             return LLMAnalysis(
-                earliest_error_command=None,
                 error_category="parse_error",
-                new_category_created=None,
+                error_subcategory=None,
+                error_description="Error parsing response",
                 root_cause="Error parsing response",
-                agent_mistakes=[],
-                analysis_summary=response,
+                analysis=response,
                 raw_response=response
             )
     
@@ -229,7 +211,7 @@ def main():
     
     parser.add_argument("--run-dir", required=True, help="Path to run directory")
     parser.add_argument("--tasks-dir", required=True, help="Path to terminal-bench tasks directory")
-    parser.add_argument("--model-provider", required=True, choices=["openai", "anthropic", "custom"], help="LLM provider")
+    parser.add_argument("--model-provider", required=False, help="Ignored (for backward compatibility)")
     parser.add_argument("--model-name", required=True, help="Model name")
     parser.add_argument("--api-key", help="API key (or use environment variable)")
     parser.add_argument("--base-url", help="Base URL for custom API provider")
@@ -252,7 +234,7 @@ def main():
     # Extract data
     print(f"Extracting data from: {run_dir}")
     print(f"Using tasks directory: {tasks_dir}")
-    extractor = HermesDataExtractor(run_dir, tasks_dir)
+    extractor = Terminus2DataExtractor(run_dir, tasks_dir)
     
     task_dirs = extractor.find_task_directories()
     print(f"Found {len(task_dirs)} task directories")
@@ -273,15 +255,20 @@ def main():
         print("No failed tasks to analyze!")
         return
     
-    # Initialize LLM provider
-    provider = get_provider(args.model_provider, args.model_name, args.api_key, args.base_url)
+    # Initialize LLM provider (single OpenAI-compatible provider)
+    provider = get_provider(
+        provider_name="openai",  # ignored
+        model_name=args.model_name,
+        api_key=args.api_key,
+        base_url=args.base_url
+    )
     
     # Initialize streaming output generator
     output_dir = Path(args.output_dir)
     output_generator = StreamingOutputGenerator(
         output_dir=output_dir,
         run_id=run_dir.name,
-        model_provider=args.model_provider,
+        model_provider="openai-compatible",
         model_name=args.model_name
     )
     
