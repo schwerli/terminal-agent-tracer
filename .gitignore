@@ -18,7 +18,6 @@ ENV/
 .DS_Store
 analysis_output/
 analysis_results/
-*.jsonl
 /tmp/
 test_output/
 
