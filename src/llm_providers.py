@@ -76,7 +76,13 @@ class OpenAIProvider(LLMProvider):
                 ],
             )
 
-            return response.choices[0].message.content
+            # Handle both standard OpenAI response and direct string response
+            if isinstance(response, str):
+                return response
+            elif hasattr(response, 'choices') and len(response.choices) > 0:
+                return response.choices[0].message.content
+            else:
+                raise RuntimeError(f"Unexpected response format: {type(response)}")
         except Exception as e:
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
@@ -101,7 +107,13 @@ class OpenAIProvider(LLMProvider):
                 ],
             )
 
-            return response.choices[0].message.content
+            # Handle both standard OpenAI response and direct string response
+            if isinstance(response, str):
+                return response
+            elif hasattr(response, 'choices') and len(response.choices) > 0:
+                return response.choices[0].message.content
+            else:
+                raise RuntimeError(f"Unexpected response format: {type(response)}")
         except Exception as e:
             raise RuntimeError(f"OpenAI API error: {str(e)}")
 
